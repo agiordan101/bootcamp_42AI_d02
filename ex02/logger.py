@@ -3,20 +3,24 @@ from random import randint
 from types import MethodType
 
 
-begin_time = time.time()
-
-
 def log(function):
 
     def function_modifed(*args, **kwargs):
         log_file = open("machine.log", 'a')
-        log_file.write("Running: {: <20} [exec-time = {:.4} ms]\n".format(
-                       function.__name__, (time.time() - begin_time) * 1000))
+        begin_time = time.time()
         if len(args) == 1:
-            function(args[0])
+            ret = function(args[0])
         else:
-            function(args[0], args[1])
+            ret = function(args[0], args[1])
+        dtime = time.time() - begin_time
+        if dtime > 1:
+            log_file.write("Running: {: <20} [exec-time = {: <6.2} s]\n"
+                           .format(function.__name__, dtime))
+        else:
+            log_file.write("Running: {: <20} [exec-time = {: <6.2} ms]\n"
+                           .format(function.__name__, dtime * 1000))
         log_file.close()
+        return (ret)
     return function_modifed
 
 
@@ -25,7 +29,9 @@ class CoffeeMachine():
 
     @log
     def start_machine(self):
+        print("Water lvl {}".format(self.water_level))
         if self.water_level > 20:
+            print("Start machine !")
             return True
         else:
             print("Please add water!")
@@ -55,9 +61,7 @@ if __name__ == "__main__":
     log_file = open("machine.log", "w")
     log_file.write("")
     log_file.close()
-
     machine = CoffeeMachine()
-    print(machine)
     for i in range(0, 5):
         machine.make_coffee()
     machine.make_coffee()
