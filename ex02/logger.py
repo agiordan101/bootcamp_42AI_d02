@@ -1,6 +1,7 @@
 import time
 from random import randint
 from types import MethodType
+import os
 
 
 def log(function):
@@ -13,12 +14,12 @@ def log(function):
         else:
             ret = function(args[0], args[1])
         dtime = time.time() - begin_time
+        log_file.write("({})Running: {: <15} [exec-time = "
+                       .format(os.environ["USER"], function.__name__))
         if dtime > 1:
-            log_file.write("Running: {: <20} [exec-time = {: <6.2} s]\n"
-                           .format(function.__name__, dtime))
+            log_file.write("{: <6.2} s]\n".format(dtime))
         else:
-            log_file.write("Running: {: <20} [exec-time = {: <6.2} ms]\n"
-                           .format(function.__name__, dtime * 1000))
+            log_file.write("{: <6.2} ms]\n".format(dtime * 1000))
         log_file.close()
         return (ret)
     return function_modifed
